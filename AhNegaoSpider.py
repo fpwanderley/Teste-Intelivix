@@ -4,7 +4,8 @@ import scrapy
 
 AHNEGAO_URL = 'http://www.ahnegao.com.br/'
 AHNEGAO__NEXT_PAGE__XPATH = '//div[@id="wp_page_numbers"]//li[position()=last()]/a/@href'
-AHNEGAO__ARTICLE_TITLE_LIST_XPATH = 'article header a'
+AHNEGAO__NEXT_PAGE__XPATH = '//div[@id="wp_page_numbers"]//li[position()=last()]/a/@href'
+AHNEGAO__ARTICLE_TITLE_LIST_XPATH = '//article/header//a'
 
 
 class AhNegaoSpider(scrapy.Spider):
@@ -15,7 +16,7 @@ class AhNegaoSpider(scrapy.Spider):
 
     def parse(self, response):
 
-        for quote in response.css(AHNEGAO__ARTICLE_TITLE_LIST_XPATH):
+        for quote in response.xpath(AHNEGAO__ARTICLE_TITLE_LIST_XPATH):
 
             yield {
                 'article_title': quote.xpath('text()').extract_first(),
