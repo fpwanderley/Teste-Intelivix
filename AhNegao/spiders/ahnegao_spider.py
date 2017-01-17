@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from scrapy import Request
-from scrapy.spider import BaseSpider
+from scrapy.spiders import Spider
 from scrapy.selector import Selector
-from scrapy.contrib.loader import ItemLoader
-from scrapy.contrib.loader.processor import Join, MapCompose
+from scrapy.loader import ItemLoader
+from scrapy.loader.processors import Join, MapCompose
 
 from AhNegao.items import AhNegaoArticleItem
 
@@ -12,9 +12,15 @@ from AhNegao.items import AhNegaoArticleItem
 AHNEGAO__NEXT_PAGE__XPATH = '//div[@id="wp_page_numbers"]//li[position()=last()]/a/@href'
 
 
-class AhNegaoSpider(BaseSpider):
+class AhNegaoSpider(Spider):
     name = "ahnegao"
     start_urls = ['http://www.ahnegao.com.br/']
+
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'AhNegao.pipelines.AhNegaoArticlePipeline': 300,
+        }
+    }
 
     article_title_xpath = '//article/header//a'
     article_fields = {

@@ -1,6 +1,6 @@
-BOT_NAME = 'ahnegao'
+BOT_NAME = 'intelivix'
 
-SPIDER_MODULES = ['AhNegao.spiders']
+SPIDER_MODULES = ['AhNegao.spiders', 'GitHub.spiders']
 
 DATABASE = {
     'drivername': 'postgres',
@@ -11,6 +11,3 @@ DATABASE = {
     'database': 'intelivix',
 }
 
-ITEM_PIPELINES = {
-    'AhNegao.pipelines.AhNegaoArticlePipeline': 0,
-}
