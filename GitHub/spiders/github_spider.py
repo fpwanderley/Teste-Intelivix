@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from scrapy.spiders import Spider
 from scrapy.http import FormRequest
 from scrapy.selector import Selector
@@ -7,6 +9,10 @@ from scrapy.loader import ItemLoader
 from scrapy.loader.processors import Join
 
 from GitHub.items import GitHubRepositoryItem
+from util.utils import Log
+
+# For logging
+logr = logging.getLogger('github')
 
 
 class GitHubSpider(Spider):
@@ -28,6 +34,9 @@ class GitHubSpider(Spider):
     }
 
     def __init__(self, login='', password='', *args, **kwargs):
+        Log.add_header(logr, __name__, None, GitHubSpider)
+        logr.debug("Starting GitHubSpider.")
+
         super(GitHubSpider, self).__init__(*args, **kwargs)
 
         self.login_form_data = {
@@ -36,6 +45,8 @@ class GitHubSpider(Spider):
         }
 
     def parse(self, response):
+
+        logr.debug("Parsing GitHub initial page Request.")
 
         yield FormRequest.from_response(response,
                                         method='POST',
@@ -46,6 +57,8 @@ class GitHubSpider(Spider):
 
     def logged_in(self, response):
 
+        logr.debug("Parsing GitHub logged page Request. Checking whether the login was sucessful")
+
         PUBLIC = 'public source'
         PRIVATE = 'private source'
 
@@ -54,11 +67,12 @@ class GitHubSpider(Spider):
         successful_login = True if len(selector.xpath(self.login_error_div_xpath).extract()) == 1 else False
 
         if not successful_login:
-            print 'ERRO NO LOGIN'
+            logr.debug("Login unsucessfull.")
 
         else:
-            print 'LOGIN REALIZADO COM SUCESSO'
+            logr.debug("Login sucessfull.")
 
+            logr.debug("Gathering the repos's names.")
             # Scraping the public repos.
             for repo in selector.xpath(' | '.join([self.user_repos_xpath.format(type=PUBLIC),
                                        self.user_repos_xpath.format(type=PRIVATE)])):
@@ -73,4 +87,9 @@ class GitHubSpider(Spider):
                 loader.add_value('repo_type', repo.xpath('.//@class').extract()[0])
                 loader.add_value('repo_user', self.login_form_data['login'])
 
+                item = loader.load_item()
+
+                Log.item_yield(logr, item)
                 yield loader.load_item()
+
+        Log.add_footer(logr)
