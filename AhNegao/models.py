@@ -41,4 +41,4 @@ class AhNegaoArticleTitles(base):
 
     def __repr__(self):
         return ("Título do Artigo: {0}\n"
-                "Página do Artigo: {1}\n\n").format(self.title, self.page)
+                "Página do Artigo: {1}").format(self.title, self.page)

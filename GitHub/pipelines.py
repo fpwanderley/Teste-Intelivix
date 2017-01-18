@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from sqlalchemy.orm import sessionmaker
 
 from models import db_connect, create_github_repository_tables, GitRepository
+from util.utils import Log
+
+# For logging
+logr = logging.getLogger('github')
 
 
 class GitHubRepositoryPipeline(object):
@@ -31,8 +37,12 @@ class GitHubRepositoryPipeline(object):
         try:
             session.add(repo)
             session.commit()
+
+            Log.model_commited_on_db(logr, item)
         except:
             session.rollback()
+
+            logr.debug("Model was not commited.")
             raise
         finally:
             session.close()
